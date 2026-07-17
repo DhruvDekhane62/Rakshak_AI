@@ -64,7 +64,83 @@ graph TD
 * In-depth collapsible decision trees explaining the rationale, confidence levels, and ground-truth sources behind AI risk forecasts.
 
 ### 🔑 11. Role-Based Clearance Auth
-* Granular access control for **Admin**, **Investigator**, **Analyst**, **Supervisor**, and **Policy Maker** with custom visual metrics tailored to each role.
+* Granular access control for **Admin**, **Investigator**, **Analyst**, **Supervisor**, and **Policy Maker** with custom visual charts tailored to each role.
+
+---
+
+## 🗄️ Database Entity Schema (SQLite / Drizzle)
+
+The database schema is structured natively using Drizzle ORM to manage relational police intelligence:
+
+```mermaid
+erDiagram
+    CASE_MASTERS ||--o{ ACCUSED : contains
+    CASE_MASTERS ||--o{ VICTIMS : includes
+    CASE_MASTERS ||--o{ COMPLAINANT_DETAILS : files
+    CASE_MASTERS ||--o{ ACT_SECTION_ASSOCIATIONS : references
+    CASE_MASTERS ||--o{ ARREST_SURRENDERS : tracks
+    CASE_MASTERS ||--o{ CHARGESHEET_DETAILS : issues
+    
+    CASE_MASTERS {
+        int id PK
+        string crime_no
+        string case_no
+        timestamp crime_registered_date
+        int police_station_id FK
+        int case_status_id FK
+        real latitude
+        real longitude
+        text brief_facts
+    }
+    ACCUSED {
+        int id PK
+        int case_master_id FK
+        string accused_name
+        int age_year
+        int gender_id
+        string person_id
+    }
+    VICTIMS {
+        int id PK
+        int case_master_id FK
+        string victim_name
+        int age_year
+        int gender_id
+    }
+```
+
+### Core Master Tables
+- **Districts / Units**: Spatial organization of police circles.
+- **Ranks / Designations**: Structural hierarchy for investigation officers.
+- **Acts / Sections**: Criminal penal codes (e.g. IPC, IT Act) associated with offenses.
+
+---
+
+## 🧠 AI Processing Pipeline
+
+Every conversational query undergoes a multi-tiered pipeline:
+
+```
+[ User Query (Text / Kannada Voice) ]
+                │
+                ▼
+      [ Language Detector ] ──────► (If Kannada: Translate to English)
+                │
+                ▼
+      [ Intent Parser (LLM) ]
+                │
+                ▼
+      [ SQLite SQL Generator ]
+                │
+                ▼
+      [ Database Query Execution ]
+                │
+                ▼
+      [ Entity Link Graph Resolver ] ──► (Detects Vehicles, Phones, Bank nodes)
+                │
+                ▼
+      [ Explainable Output / Text-To-Speech ]
+```
 
 ---
 
@@ -94,6 +170,23 @@ The client portal will be available at: **http://localhost:5173**
 ```bash
 npm run build
 ```
+
+### 4. Check Code Safety & Types
+```bash
+npm run typecheck
+```
+
+---
+
+## ☁️ Zoho Catalyst Slate Deployment Config
+
+To deploy the Rakshak AI frontend static application to Zoho Catalyst Slate from GitHub, configure the settings as follows in your Slate console:
+
+* **Framework**: `React + Vite`
+* **Node Runtime**: `Node 22`
+* **Root Path**: `./`
+* **Build Command**: `npm run build` *(runs our custom script that compiles the monorepo workspaces and copies output static assets directly to the root `dist/` directory)*
+* **Auto Deploy**: `Enabled` *(automatically triggers builds on Git pushes to `main`)*
 
 ---
 

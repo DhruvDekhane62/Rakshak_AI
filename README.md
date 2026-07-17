@@ -178,18 +178,6 @@ npm run typecheck
 
 ---
 
-## ☁️ Zoho Catalyst Slate Deployment Config
-
-To deploy the Rakshak AI frontend static application to Zoho Catalyst Slate from GitHub, configure the settings as follows in your Slate console:
-
-* **Framework**: `React + Vite`
-* **Node Runtime**: `Node 22`
-* **Root Path**: `./`
-* **Build Command**: `npm run build` *(runs our custom script that compiles the monorepo workspaces and copies output static assets directly to the root `dist/` directory)*
-* **Auto Deploy**: `Enabled` *(automatically triggers builds on Git pushes to `main`)*
-
----
-
 ## 🔑 Officer Clearance Logins
 
 To login, navigate to **[http://localhost:5173/login](http://localhost:5173/login)** and use the following officer credentials:

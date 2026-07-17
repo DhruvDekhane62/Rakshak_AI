@@ -1,12 +1,12 @@
-# [Project name]
+# Rakshak AI — Crime Intelligence Platform
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A full-stack AI-powered crime intelligence platform for the Karnataka State Police. Combines conversational AI, criminal network analysis, crime pattern analytics, hotspot detection, offender profiling, and predictive forecasting in a single dark-themed investigator interface.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/rakshak-ai run dev` — run the frontend (port assigned by workflow)
+- `pnpm --filter @workspace/api-server run dev` — run the API server
 - `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - Required env: `DATABASE_URL` — Postgres connection string
@@ -14,6 +14,7 @@ _Replace the heading above with the project's name, and this line with one sente
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
+- Frontend: React + Vite, Tailwind CSS, Framer Motion, Recharts, Wouter
 - API: Express 5
 - DB: PostgreSQL + Drizzle ORM
 - Validation: Zod (`zod/v4`), `drizzle-zod`
@@ -22,15 +23,24 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
-
-## Architecture decisions
-
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- `lib/api-spec/openapi.yaml` — single source of truth for all API contracts
+- `lib/db/src/schema/` — Drizzle DB schema (firs, accused, chat, alerts)
+- `artifacts/api-server/src/routes/` — Express route handlers (dashboard, chat, firs, accused, network, analytics, hotspots, forecasting, alerts)
+- `artifacts/rakshak-ai/src/pages/` — Frontend pages
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Rakshak AI is a crime intelligence platform for investigators, analysts, supervisors, and policymakers with:
+1. **AI Conversational Assistant** — natural language chat interface for querying crime data
+2. **Criminal Network Analysis** — interactive force-directed graph of accused/victim/location links
+3. **Crime Pattern Analytics** — trend charts, district breakdowns, modus operandi analysis
+4. **Crime Hotspot Detection** — Karnataka district map with intensity-coded crime hotspots
+5. **FIR Management** — searchable FIR list with AI summaries and similar case finder
+6. **Offender Profiling** — risk scoring (0–100) with behavioral profiling and network links
+7. **Sociological Insights** — demographics, age groups, education vs. crime correlation
+8. **Crime Forecasting** — AI-driven predictions with probability scores and risk areas
+9. **Smart Alerts** — repeat offender, gang activity, crime spike, and serial pattern alerts
+10. **Role-Based Access** — Investigator, Analyst, Supervisor, Policy Maker, Admin roles
 
 ## User preferences
 
@@ -38,8 +48,7 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- After any OpenAPI spec change, re-run `pnpm --filter @workspace/api-spec run codegen` before touching routes or frontend
+- Run `pnpm run typecheck:libs` after any `lib/*` change before checking artifact packages
+- Analytics endpoints use synthetic trend data layered on top of real DB counts — real data is used for totals and groupings
+- Hotspot and forecasting data are static fixtures (real ML model integration is the next step)

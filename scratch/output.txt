@@ -1,0 +1,538 @@
+Karnataka Police Department  | Confidential
+ 
+CourtID                                  INT                          FK        FK → Court.CourtID —  court where the case is being heard  
+case 
+CaseStatusID                         INT                          FK 
+FK → CaseStatusMaster.CaseStatusID —  current sta tus of the 
+classification  
+CrimeMinorHeadID                INT                          FK 
+FK → CrimeSubHead.CrimeSubHeadID   —  minor crime sub -head 
+classification  
+CrimeMajorHeadID                INT                          FK 
+FK → CrimeHead.CrimeHeadID  —  major crime head 
+offence 
+GravityOffenceID                    INT                          FK 
+FK → GravityOffence.GravityOffenceID —  gravity level of the 
+CaseCategoryID                     INT                          FK        FK → CaseCategory.CaseCategoryID  —  category   
+PoliceStationID                       INT                          FK        FK → Unit.UnitID —  police station where FIR is registered  
+PolicePersonID                     INT                         FK        FK → Employee.EmployeeID  —  officer who r egistered the FIR  
+CrimeRegisteredDate             DATE                                  Date when the FIR was registered  
+from CrimeNo)  
+running serial number   (e.g.,      202600001 ).   ( Last 9 digits 
+police station and per year. The format is              YYYY + 5 -digit 
+CaseNo                                   VARCHAR                  
+each case category, a unique serial number is maintained per 
+is associated with the corresponding          PoliceStationID . For 
+The  
+Case Number  is generated at the police station level and 
+     PAR: 4  04430006202600001       
+     Zero FIR:   8  04430006202600001        
+     UDR: 304430006202600001        
+     FIR: 104430006202600001        
+Examples:   
+police station, case category, and year.         
+CrimeNo                                 VARCHAR                           A separate running serial number is maintained             for each 
+Serial Number     
+Police Station ID (Unit ID) + 4 digit Year + 5 digit Running 
+1 digit Case Category Code + 4 digit District ID + 4 digit 
+Number follows a structured format consisting of:               
+linked to the corresponding        PoliceStationID    . The Crime 
+Crime Number      is assigned at the police station level and is 
+CaseMasterID                      INT                         PK        Primary key   —   unique identifier for each FIR/case      
+Column Name                   Type                   Key      Description 
+ 
+CaseMaster
+ 
+Table Definitions
+         Normal column             Regular data column with no key constraint  
+         Alternate row               Alternating row shading for readability  
+         FK —  Foreign Key       References the Primary Key of another table  
+Uniquely identifies each record in the table  
+        PK —  Primary Key 
+ 
+Color Legend
+Karnataka Police Department  
+ 
+Entity Relationship Diagram —  Database Design Document
+ 
+DB schema 
+Police FIR System —  ER Diagram
+ 
+----------------Page (0) Break----------------
+Karnataka Police Department  | Confidential
+ 
+CaseMasterID                          INT                      FK        FK → CaseMaster.CaseMasterID  —  FIR/case this accused is linked 
+AccusedMasterID                   INT                      PK        Primary key   —   unique identifier for each accused person       
+Column Name                     Type               Key      Description  
+ 
+Accused
+VictimPolice                            VARCHAR                      If Victim is police  then 1else 0    
+GenderID                                INT                                 Gender of the victim (lookup value)  like m, f, t  
+AgeYear                                  INT                                 Age of the victim in years  
+VictimName                            VARCHAR                      Full name of the victim  
+CaseMasterID                          INT                      FK        FK → CaseMaster.CaseMasterID  —  FIR/case this victim belongs to  
+VictimMasterID                      INT                     PK        Primary key   —   unique identifier for each victim     
+Column Name                    Type               Key      Description 
+ 
+Victim
+SectionOrderID                       INT                                 Display/print order of the section under the act   
+ActOrderID                             INT                                 Display/print order of the act within the case   
+SectionID                                INT                     FK        FK → Section.SectionCode —  specific section of the act invoked  
+ActID                                      INT                     FK        FK → Act.ActCode —  legal act under which charges are framed   
+applies to  
+CaseMasterID                         INT                     FK 
+FK → CaseMaster.CaseMasterID  —  FIR/case this act -section 
+Column Name                    Type               Key      Description 
+ 
+ActSectionAssociation
+GenderID                                INT                                 Gender of the complainant (lookup value)   
+CasteID                                  INT                     FK        FK → CasteMaster.caste_master_id —  caste of the complainant  
+ReligionID                              INT                     FK        FK → ReligionMaster.ReligionID —  religion of the complainant  
+complainant  
+OccupationID                          INT                     FK 
+FK → OccupationMaster.OccupationID —  occupation of the 
+AgeYear                                  INT                                 Age of the complainant  
+ComplainantName                  VARCHAR                      Full name of the complainant  
+complainant  
+CaseMasterID                          INT                      FK 
+FK → CaseMaster.CaseMasterID  —  FIR/case filed by this 
+ComplainantID                     INT                     PK        Primary key   —   unique identifier for the complainant      
+Column Name                    Type               Key      Description 
+ 
+ComplainantDetails
+BriefFacts                              Nvarchar(Max)                    Summary of the case  
+longitude                                DECIMAL                           GPS longitude coordinate of the incident location  
+latitude                                   DECIMAL                           GPS latitude coordinate of the incident location  
+incident 
+InfoReceivedPSDate              DATETIME                
+Date and time when police station received information about the 
+IncidentToDate                      DATETIME                         End date and time of the incident  
+IncidentFromDate                   DATETIME                         Start date and time of the incident  
+Column Name                   Type                   Key      Description 
+Police FIR System —  ER Diagram
+ 
+----------------Page (1) Break----------------
+Karnataka Police Department  | Confidential
+ 
+combination maps to  
+CrimeHeadID                          INT                     FK 
+FK → CrimeHead.CrimeHeadID  —  crime head this act -section 
+Column Name                    Type               Key      Description 
+ 
+CrimeHeadActSection
+Active                                     BIT                                 Whether the section is currently active (1=Active, 0=Inactive)   
+SectionDescription                  VARCHAR                      Full description of the section  
+SectionCode                           VARCHAR                      Section number/code (e.g. 302, 307)  
+ActCode                                  VARCHAR          FK        FK → Act.ActCode —  parent act this section belongs to  
+Column Name                    Type               Key      Description 
+ 
+Section
+Active                                     BIT                                 Whether the act is currently active and usable (1=Active, 0=Inactive)     
+ShortName                              VARCH AR                     Abbreviated/common name of the act   
+ActDescription                          VARCHAR                      Full official name/description of the act      
+ActCode                                 VARCHAR          PK        Primary key   —   unique code for the legal act (e.g. IPC, NDPS)       
+Column Name                    Type               Key      Description 
+ 
+Act
+IsComplainantAccused           BIT                                 Flag (0/1): whether the complainant is also listed as accused   
+IsAccused                               BIT                                 Flag (0/1): whether the person is the primary accused in the case    
+arrest/surrender  
+AccusedMasterID                   INT                     FK 
+FK → Accused.AccusedMasterID  —  accused person linked to this 
+CourtID                                   INT                     FK        FK → Court.CourtID —  court before which accused was produced   
+arrest 
+IOID                                        INT                     FK 
+FK → Employee. EmployeeID  —  Investigating Officer who made the 
+PoliceStationID                       INT                     FK        FK → Unit.UnitID —  police station handling the arrest  
+ArrestSurrenderDistrictId        INT                     FK        FK → District.DistrictID —  district where arrest/surrender occurred  
+ArrestSurrenderStateId           INT                     FK        FK → State .StateID  —  state where arrest/surrender occurred  
+ArrestSurrenderDate              DATE                             Date of arrest or surrender  
+ArrestSurrenderTypeID          INT                                 Type of event: arrest or voluntary surrender (lookup value)   
+arrest/surrender  
+CaseMasterID                          INT                      FK 
+FK → CaseMaster.CaseMasterID  —  FIR/case linked to this 
+ArrestSurrenderID                 INT                      PK        Primary key   —   unique identifier for each arrest/surrender event        
+Column Name                     Type               Key      Description  
+ 
+ArrestSurrender
+PersonID                                VARCHAR                    Accused Sorting like A1, A2, A3 .... 
+GenderID                               INT                                Gender of the accused mentioned as M/F/T 
+AgeYear                                 INT                                Age of the accused 
+AccusedName                       VARCHAR                    Full name of the accused 
+to 
+Column Name                    Type               Key      Description 
+Police FIR System —  ER Diagram
+ 
+----------------Page (2) Break----------------
+Karnataka Police Department  | Confidential
+ 
+Closed)  
+CaseStatusName                     VARCHAR             
+Name of the status (e.g. Under Investigation, Charge Sheeted, 
+CaseMaster.CaseStatusID    
+CaseStatusID                          INT                      PK 
+Primary key   —   unique identifier for each case     status. Referenced by 
+Column Name                     Type                Key      Description  
+ 
+CaseStatusMaster
+OccupationName                     VARCHAR                      Name of the occupation (e.g. Farmer, Government Employee)         
+ComplainantDetails.OccupationID     
+OccupationID                          INT                      PK 
+Primary key   —   unique identifier for each occ    upation. Referenced by 
+Column Name                     Type                Key      Description  
+ 
+OccupationMaster
+ReligionName                         VARCHAR                      Name of the religion (e.g. Hindu, Muslim, Christian)        
+ComplainantDetails.ReligionID     
+ReligionID                              INT                      PK 
+Primary key   —   unique identifier   for each religion. Referenced by 
+Column Name                     Type                Key      Description  
+ 
+ReligionMaster
+caste_master_name                VARCHAR                      Name of the caste   
+ComplainantDetails.CasteID    
+caste_master_id                    INT                     PK 
+Primary key   —   unique identifier for each caste. Referenced by 
+Column Name                    Type               Key      Description 
+ 
+CasteMaster
+SeqID                                     INT                                 Display/sort sequence number for ordering sub  -heads 
+CrimeHeadName                    VARCHAR                      Name of this crime sub -head (e.g. Murder, Robbery)  
+belongs to  
+CrimeHeadID                          INT                      FK 
+FK → CrimeHead.CrimeHeadID  —  parent major crime head this 
+CrimeSubHeadID                    INT                      PK        Primary key   —   unique identifier for the crime sub     -head  
+Column Name                     Type                Key      Description  
+ 
+CrimeSubHead
+Activ e                                     BIT                                  Whether this crime head is active (1=Active, 0=Inactive)         
+CrimeGroupName                    VARCHAR                      Name of the crime group/major head (e.g. Crimes Against Body)          
+CrimeHeadID                         INT                     PK        Primary key   —   unique identifier for the major crime head       
+Column Name                    Type               Key      Description 
+ 
+CrimeHead
+ 
+SectionCode                           VARCHAR                      Section code fr om the act applicable to this crime head  
+ActCode                                 VARCHAR         FK        FK → Act.ActCode —  legal act linked to this crime head  
+Column Name                    Type               Key      Description 
+Police FIR System —  ER Diagram
+ 
+----------------Page (3) Break----------------
+Karnataka Police Department  | Confidential
+ 
+CityDistState                          VARCHAR                     Operational level: City / District / State 
+UnitTypeName                       VARCHAR                     Name of the unit type (e.g. Police Station, Circle Office) 
+Unit.Type ID 
+UnitTypeID                             INT                     PK 
+Primary key   —   unique identifier for the unit type. Referenced by 
+Column Name                    Type               Key      Description 
+ 
+UnitType
+Active                                      BIT                                 Whether the unit is active (1=Active, 0=Inactive)    
+DistrictID                                 INT                     FK        FK → District.DistrictID —  district the unit belongs to   
+StateID                                   INT                     FK        FK → State.StateID —  state the unit belongs to  
+NationalityID                           INT                                 Nationality reference ID  
+ParentUnit                               INT                                 Parent unit ID for hierarchy (self -reference to UnitID)  
+TypeID                                     INT                      FK        FK → UnitType.UnitTypeID —  type/category of the unit  
+UnitName                                VARCHAR                      Name of the unit or police station      
+ArrestSurrender.PoliceStationID     
+UnitID                                      INT                      PK        CaseMaster.PoliceStationID, Employee.UnitID, 
+Primary key   —   unique i dentifier for the police unit. Referenced by 
+Column Name                     Type                Key      Description  
+ 
+Unit
+Active                                      BIT                                  Whether the state record is active (1=Active, 0=Inactive)         
+NationalityID                             INT                                  Nationality reference ID    
+StateName                              VARCHAR                      Name of the state   
+Distri ct, Unit, ArrestSurrender    
+StateID                                   INT                     PK 
+Primary key   —   unique identifier for the state. Referenced by Court, 
+Column Name                    Type               Key      Description 
+ 
+State
+Active                                     BIT                                 Whether the district record is active (1=Active, 0=Inactive)   
+StateID                                    INT                      FK        FK → State.StateID —  state this district belongs to  
+DistrictName                            VARCHAR                      Name of the dis  trict  
+Unit, Employee, ArrestSurrender     
+DistrictID                                INT                     PK 
+Primary key   —   unique identifier for the district. Referenced by Court, 
+Column Name                    Type               Key      Description 
+ 
+District
+Active                                     BIT                                 Whether the court is active (1=Active, 0=Inactive)   
+StateID                                   INT                     FK        FK → State.StateID —  state where the court is located  
+DistrictID                                 INT                      FK        FK → District.DistrictID —  district where the court is located  
+CourtName                              VARCHAR                      Full name of the court    
+CaseMaster.CourtID, ArrestSurrender.CourtID      
+CourtID                                  INT                     PK 
+Primary key   —   unique identifier for the court. Referenc      ed by 
+Column Name                    Type               Key      Description 
+ 
+Court
+Police FIR System —  ER Diagram
+ 
+----------------Page (4) Break----------------
+Karnataka Police Department  | Confidential
+ 
+by CaseMaster.CaseCategoryID     
+CaseCategoryID                    INT                     PK 
+Primary key   —   unique identifier for th   e case category. Referenced 
+Column Name                    Type               Key      Description 
+ 
+CaseCategory
+AppointmentDate                    DATE                             Date of appointment to government service   
+Physically Challenged             BIT                                 Flag: whether the employee is physically challenged (1=Yes, 0=No)    
+BloodGroupID                         INT                                 Blood group of the employee (lookup value)   
+GenderID                                INT                                 Gender of the employee (lookup value)  
+EmployeeDOB                        DATE                             Date of birth of the employee  
+FirstName                               VARCHAR                      First name of the employee  
+KGID                                      VARCHAR                      Karnataka Government ID (u nique government employee number)  
+employee  
+DesignationID                         INT                     FK 
+FK → Designation.DesignationID —  current designation of the 
+RankID                                   INT                     FK        FK → Rank.RankID  —  current rank of the employee  
+UnitID                                     INT                     FK        FK → U nit.UnitID  —  unit/police station the employee is assigned to   
+in 
+DistrictID                                 INT                      FK 
+FK → District.DistrictID —  district the employee is currently posted 
+by CaseMaster.PolicePersonID, ArrestSurrender.IOID       
+EmployeeID                           INT                      PK 
+Primary key   —   unique identifier for the police employee. Referenced 
+Column Name                     Type                Key      Descri ption 
+ 
+Employee
+SortOrder                                INT                                  Display sort order for dropdowns/reports      
+Active                                      BIT                                  Whether the designation is active (1=Active, 0=Inactive)         
+DesignationName                    VARCHAR                      Name of the designation (e.g. Investigating Officer, SHO)         
+Employee.Design  ationID  
+DesignationID                         INT                      PK 
+Primary key   —   unique identifier for the designation. Referenced by 
+Column Name                     Type                Key      Description  
+ 
+Designation
+ 
+Active                                      BIT                                  Whether the rank is active (1=Active, 0=Inactive)        
+Hierarchy                                 INT                                  Rank hierarchy level (lower = higher rank)       
+RankName                              VARCHAR                      Name of the police rank (e.g. Constable, Inspector, DSP)         
+Employee.RankID   
+RankID                                   INT                     PK 
+Primary key   —   unique identifier for the rank. Referenced by 
+Column Name                    Type               Key      Description 
+ 
+Rank
+Active                                     BIT                                 Whether the unit type is  active (1=Active, 0=Inactive)  
+Hierarchy                               INT                                 Hierarchy level number (lower = higher authority)  
+Column Name                    Type               Key      Description 
+Police FIR System —  ER Diagram
+ 
+----------------Page (5) Break----------------
+Karnataka Police Department  | Confidential
+ 
+record  
+time/location 
+CaseMaster                                CaseMasterID                       One to One        Inv_OccuranceTime                   CaseMasterID           occurrence 
+one 
+One FIR has 
+act -sections  
+CaseMaster                              CaseMasterID                   One to Many     ActSectionAssociation              CaseMasterID           invoke multiple 
+One FIR can 
+complainants 
+CaseMaster                              CaseMasterID                   One to Many     ComplainantDetails                CaseMasterID         have multiple 
+One FIR can 
+er events 
+arrest/surrend
+CaseMaster                              CaseMasterID                   One to Many     ArrestSurrender                      CaseMasterID 
+have multiple 
+One FIR can 
+persons 
+accused 
+CaseMaster                              CaseMasterID                   One to Many     Accused                                   CaseMasterID 
+have multiple 
+One FIR can 
+victims 
+CaseMaster                              CaseMasterID                   One to Many     Victim                                       CaseMasterID         have multiple 
+One FIR can 
+p 
+Parent Table                         Parent Column                                     Child Table                           Child Column      Description 
+Relationshi
+Defines all foreign key relationships between tables, including cardinality and a brief description. 
+ 
+Relationship Matrix
+ 
+ 
+PolicePersonID                       INT                     FK        FK → employeeMaster. employee ID 
+cstype                                     CHAR                             Final report type A-> Chargesheet , B->False Case , C->Undetected  
+csdate                                    DATETIME                      Chargesheet ed date 
+complainant  
+CaseMasterID                          INT                      FK 
+FK → CaseMaster.CaseMasterID  —  FIR/case filed by this 
+CSID                                      INT                     PK        Primary key   —   unique identifier for the    chargesheet   
+Column Name                     Type                Key      Description  
+ 
+Chargesheet Details
+LookupValue                           VARCHAR                      Gravity description (e.g. Heinous,     Non-Heinous ) 
+CaseMaster.GravityOffenceID    
+GravityOffenceID                  INT                     PK 
+Primary key   —   unique identifier for the gravity level.       Referenced by 
+Column Name                    Type               Key      Description 
+ 
+GravityOffence
+LookupValue                          VARCHAR                     Category name (FIR, UDR, PAR.. ) 
+Column Name                    Type               Key      Description 
+Police FIR System —  ER Diagram
+ 
+----------------Page (6) Break----------------
+Karnataka Police Department  | Confidential
+ 
+can belong to 
+ComplainantDetails                 CasteID                             Many to One      CasteMaster                              caste_master_id      complainants 
+Many 
+same religion  
+can share the 
+ComplainantDetails                 ReligionID                           Many to One      ReligionMaster                         ReligionID  
+complainants 
+Many 
+occupation  
+same 
+ComplainantDetails                 OccupationID                      Many to One      OccupationMaster                    OccupationID           can share the 
+complainants 
+Many 
+IO 
+by the same 
+ArrestSurrender                      IOID                                   Many to One     Employee                                 EmployeeID 
+can be made 
+Many arrests 
+before a court 
+ArrestSurrender                      CourtID                              Many to One     Court                                         CourtID                   be produced 
+Accused may 
+same district 
+Id                                                                                                                                                   occur in the 
+ArrestSurrender                                                                  Many to One     District                                      DistrictID 
+ArrestSurrenderDistrict                                                                                                                   events can 
+Many arrest 
+same state  
+occur in the 
+ArrestSurrender                       ArrestSurrenderStateId      Many to One      State                                           StateID  
+events can 
+Many arrest 
+er event  
+ed                                                                                                                                                                    D                             arrest/surrend
+ArrestSurrenderID              Many to One      ArrestSurr ender  
+inv_arrestsurrenderaccus                                                                                                                              ArrestSurrenderI      to the 
+Junction links 
+junction  
+accused via 
+junction)                                                      ed                                              D 
+ArrestSurrender                                                                 One to Many                                                                                            multiple 
+AccusedMasterID(via                                 inv_arrestsurrenderaccus     ArrestSurr enderI
+event can link 
+One arrest 
+employee 
+the same 
+CaseMaster                              PolicePersonID                 Many to One     Employee                                 EmployeeID            registered by 
+can be 
+Many FIRs 
+the same court 
+CaseMaster                              CourtID                              Many to One     Court                                         CourtID                   can be tried in 
+Many FIRs 
+same status 
+CaseMaster                              CaseStatusID                    Many to One     CaseStatusMaster                    CaseStatusID          can have the 
+Many FIRs 
+sub-head 
+D                             same crime 
+CaseMaster                              CrimeMinorHeadID            Many to One     CrimeSubHead  
+CrimeSubHeadI      can share the 
+Many FIRs 
+crime head 
+same major 
+CaseMaster                              CrimeMajorHeadID            Many to One     CrimeHead                               CrimeHeadID 
+can share the 
+Many FIRs 
+level 
+D                             same gravity 
+CaseMaster                              GravityOffenceID                Many to One     GravityOffence  
+GravityOffenceI       can have the 
+Many FIRs 
+same category 
+CaseMaster                              CaseCategoryID                 Many to One     CaseCategory                          CaseCategoryID      can share the 
+Many FIRs 
+p 
+Parent Table                         Parent Column                                     Child Table                           Child Column      Description 
+Relationshi
+Police FIR System —  ER Diagram
+ 
+----------------Page (7) Break----------------
+Karnataka Police Department  | Confidential
+ 
+ 
+designation 
+same 
+Employee                                 DesignationID                    Many to One     Designation                             DesignationID         can have the 
+employees 
+Many 
+same rank 
+can hold the 
+Employee                                 RankID                              Many to One     Rank                                         RankID 
+employees 
+Many 
+the same unit 
+assigned to 
+Employee                                 UnitID                                Many to One     Unit                                           UnitID 
+employees 
+Many 
+same district 
+posted in the 
+Employee                                 DistrictID                            Many to One     District                                      DistrictID 
+employees 
+Many 
+same district 
+Unit                                           DistrictID                            Many to One     District                                      DistrictID                 belong to the 
+Many units 
+same state 
+Unit                                           StateID                              Many to One     State                                         StateID                    located in the 
+Many units are 
+same unit type 
+Unit                                           TypeID                               Many to One     UnitType                                   UnitTypeID              share the 
+Many units 
+state 
+District                                      StateID                              Many to One     State                                         StateID                    belong to one 
+Many districts 
+same district 
+Court                                         DistrictID                            Many to One     District                                      DistrictID                 can be in the 
+Many courts 
+sections 
+multiple 
+Act                                            ActCode                            One to Many     Section                                     ActCode 
+contains 
+One act 
+heads 
+multiple crime 
+Act                                            ActCode                            One to Many     CrimeHeadActSection            ActCode 
+be linked to 
+One act can 
+sections 
+to multiple act-
+CrimeHead                               CrimeHeadID                     One to Many     CrimeHeadActSection             CrimeHeadID 
+head can map 
+One crime 
+head 
+major crime 
+CrimeSubHead                         CrimeHeadID                     Many to One     CrimeHead                               CrimeHeadID          under one 
+heads fall 
+Multiple sub-
+same section 
+ActSectionAssociation            SectionID                           Many to One     Section                                     SectionCode           can use the 
+Many cases 
+same act 
+reference the 
+ActSectionAssociation            ActID                                  Many to One     Act                                             ActCode 
+sections can 
+Many case-
+caste 
+the same 
+p 
+Parent Table                         Parent Column                                     Child Table                           Child Column      Description 
+Relationshi
+Police FIR System —  ER Diagram
+ 
+----------------Page (8) Break----------------

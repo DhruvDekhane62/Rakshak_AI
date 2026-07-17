@@ -1,22 +1,38 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Rakshak AI - Crime Intelligence Platform API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: chat
+    description: AI conversational interface
+  - name: dashboard
+    description: Dashboard summaries and alerts
+  - name: firs
+    description: FIR (First Information Report) management
+  - name: accused
+    description: Accused / offender profiles
+  - name: network
+    description: Criminal network analysis
+  - name: analytics
+    description: Crime analytics and statistics
+  - name: hotspots
+    description: Crime hotspot detection
+  - name: forecasting
+    description: Crime forecasting and predictions
+  - name: alerts
+    description: Smart alerts and notifications
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +40,426 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ─── Dashboard ───────────────────────────────────────────────────────────
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard KPI summary
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/recent-activity:
+    get:
+      operationId: getRecentActivity
+      tags: [dashboard]
+      summary: Recent FIRs, arrests, and investigation events
+      responses:
+        "200":
+          description: Recent activity list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
+  /dashboard/crime-type-breakdown:
+    get:
+      operationId: getCrimeTypeBreakdown
+      tags: [dashboard]
+      summary: Crime count grouped by type
+      responses:
+        "200":
+          description: Crime type breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CrimeTypeCount"
+
+  # ─── Chat ────────────────────────────────────────────────────────────────
+  /chat/message:
+    post:
+      operationId: sendChatMessage
+      tags: [chat]
+      summary: Send a message to the AI assistant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatMessageInput"
+      responses:
+        "200":
+          description: AI response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+
+  /chat/history:
+    get:
+      operationId: getChatHistory
+      tags: [chat]
+      summary: Get conversation history
+      responses:
+        "200":
+          description: Conversation history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatMessage"
+
+  # ─── FIRs ─────────────────────────────────────────────────────────────────
+  /firs:
+    get:
+      operationId: listFirs
+      tags: [firs]
+      summary: List all FIRs with filters
+      parameters:
+        - name: crimeType
+          in: query
+          schema:
+            type: string
+        - name: district
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: FIR list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FIR"
+    post:
+      operationId: createFir
+      tags: [firs]
+      summary: Create a new FIR
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FIRInput"
+      responses:
+        "201":
+          description: Created FIR
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FIR"
+
+  /firs/{id}:
+    get:
+      operationId: getFir
+      tags: [firs]
+      summary: Get a specific FIR
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: FIR details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FIR"
+        "404":
+          description: Not found
+
+  /firs/{id}/summary:
+    get:
+      operationId: getFirSummary
+      tags: [firs]
+      summary: AI-generated summary and investigation timeline for an FIR
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: FIR AI summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FirSummary"
+
+  /firs/{id}/similar:
+    get:
+      operationId: getSimilarFirs
+      tags: [firs]
+      summary: Find similar past FIR cases
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Similar FIRs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SimilarCase"
+
+  # ─── Accused / Offender Profiles ─────────────────────────────────────────
+  /accused:
+    get:
+      operationId: listAccused
+      tags: [accused]
+      summary: List accused with risk scores
+      parameters:
+        - name: riskLevel
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high, critical]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Accused list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Accused"
+
+  /accused/{id}:
+    get:
+      operationId: getAccused
+      tags: [accused]
+      summary: Get offender profile with risk scoring
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Offender profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccusedProfile"
+        "404":
+          description: Not found
+
+  /accused/{id}/network:
+    get:
+      operationId: getAccusedNetwork
+      tags: [accused]
+      summary: Criminal network graph for a specific accused
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Network graph
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkGraph"
+
+  # ─── Criminal Network ────────────────────────────────────────────────────
+  /network/graph:
+    get:
+      operationId: getNetworkGraph
+      tags: [network]
+      summary: Full criminal network graph
+      parameters:
+        - name: firId
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: accusedId
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Network graph data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkGraph"
+
+  # ─── Analytics ───────────────────────────────────────────────────────────
+  /analytics/trends:
+    get:
+      operationId: getCrimeTrends
+      tags: [analytics]
+      summary: Crime trend over time
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [monthly, quarterly, yearly]
+            default: monthly
+        - name: crimeType
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Crime trend data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TrendDataPoint"
+
+  /analytics/by-district:
+    get:
+      operationId: getCrimesByDistrict
+      tags: [analytics]
+      summary: Crime counts grouped by district
+      responses:
+        "200":
+          description: District crime data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DistrictCrimeData"
+
+  /analytics/sociological:
+    get:
+      operationId: getSociologicalInsights
+      tags: [analytics]
+      summary: Sociological insights - demographics, socio-economic factors
+      responses:
+        "200":
+          description: Sociological insights data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SociologicalInsights"
+
+  /analytics/modus-operandi:
+    get:
+      operationId: getModusOperandiStats
+      tags: [analytics]
+      summary: Modus operandi pattern analysis
+      responses:
+        "200":
+          description: MO patterns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MOPattern"
+
+  # ─── Hotspots ────────────────────────────────────────────────────────────
+  /hotspots:
+    get:
+      operationId: getHotspots
+      tags: [hotspots]
+      summary: Get crime hotspot data for map
+      parameters:
+        - name: crimeType
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Hotspot data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Hotspot"
+
+  # ─── Forecasting ─────────────────────────────────────────────────────────
+  /forecasting/predictions:
+    get:
+      operationId: getCrimePredictions
+      tags: [forecasting]
+      summary: AI crime predictions for upcoming period
+      responses:
+        "200":
+          description: Crime predictions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CrimePrediction"
+
+  /forecasting/risk-areas:
+    get:
+      operationId: getRiskAreas
+      tags: [forecasting]
+      summary: High risk areas for proactive patrolling
+      responses:
+        "200":
+          description: Risk areas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RiskArea"
+
+  # ─── Alerts ──────────────────────────────────────────────────────────────
+  /alerts:
+    get:
+      operationId: getAlerts
+      tags: [alerts]
+      summary: Smart alerts - repeat offenders, crime spikes, gang activity
+      responses:
+        "200":
+          description: Active alerts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Alert"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +470,777 @@ components:
       required:
         - status
 
+    # Dashboard
+    DashboardSummary:
+      type: object
+      properties:
+        totalFirs:
+          type: integer
+        activeCases:
+          type: integer
+        solvedCases:
+          type: integer
+        arrestsMade:
+          type: integer
+        highRiskOffenders:
+          type: integer
+        crimeHotspots:
+          type: integer
+        predictedCrimesNextWeek:
+          type: integer
+        gangNetworksDetected:
+          type: integer
+      required:
+        - totalFirs
+        - activeCases
+        - solvedCases
+        - arrestsMade
+        - highRiskOffenders
+        - crimeHotspots
+        - predictedCrimesNextWeek
+        - gangNetworksDetected
+
+    ActivityItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        timestamp:
+          type: string
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+      required:
+        - id
+        - type
+        - description
+        - location
+        - timestamp
+        - severity
+
+    CrimeTypeCount:
+      type: object
+      properties:
+        crimeType:
+          type: string
+        count:
+          type: integer
+        percentage:
+          type: number
+      required:
+        - crimeType
+        - count
+        - percentage
+
+    # Chat
+    ChatMessageInput:
+      type: object
+      properties:
+        message:
+          type: string
+        language:
+          type: string
+          enum: [english, kannada]
+          default: english
+        sessionId:
+          type: ["string", "null"]
+      required:
+        - message
+
+    ChatResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        sessionId:
+          type: string
+        message:
+          type: string
+        response:
+          type: string
+        sources:
+          type: array
+          items:
+            type: string
+        relatedFirIds:
+          type: array
+          items:
+            type: integer
+        timestamp:
+          type: string
+        language:
+          type: string
+      required:
+        - id
+        - sessionId
+        - message
+        - response
+        - sources
+        - relatedFirIds
+        - timestamp
+        - language
+
+    ChatMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+        sessionId:
+          type: string
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+        timestamp:
+          type: string
+      required:
+        - id
+        - sessionId
+        - role
+        - content
+        - timestamp
+
+    # FIR
+    FIR:
+      type: object
+      properties:
+        id:
+          type: integer
+        firNumber:
+          type: string
+        crimeType:
+          type: string
+        district:
+          type: string
+        policeStation:
+          type: string
+        dateOfOccurrence:
+          type: string
+        location:
+          type: string
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        description:
+          type: string
+        status:
+          type: string
+          enum: [open, under_investigation, chargesheet_filed, closed]
+        victimCount:
+          type: integer
+        accusedCount:
+          type: integer
+        officerInCharge:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - firNumber
+        - crimeType
+        - district
+        - policeStation
+        - dateOfOccurrence
+        - location
+        - description
+        - status
+        - victimCount
+        - accusedCount
+        - officerInCharge
+        - createdAt
+
+    FIRInput:
+      type: object
+      properties:
+        firNumber:
+          type: string
+        crimeType:
+          type: string
+        district:
+          type: string
+        policeStation:
+          type: string
+        dateOfOccurrence:
+          type: string
+        location:
+          type: string
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        description:
+          type: string
+        officerInCharge:
+          type: string
+      required:
+        - firNumber
+        - crimeType
+        - district
+        - policeStation
+        - dateOfOccurrence
+        - location
+        - description
+        - officerInCharge
+
+    FirSummary:
+      type: object
+      properties:
+        firId:
+          type: integer
+        aiSummary:
+          type: string
+        timeline:
+          type: array
+          items:
+            $ref: "#/components/schemas/TimelineEvent"
+        recommendations:
+          type: array
+          items:
+            type: string
+        keyFindings:
+          type: array
+          items:
+            type: string
+        riskLevel:
+          type: string
+          enum: [low, medium, high, critical]
+      required:
+        - firId
+        - aiSummary
+        - timeline
+        - recommendations
+        - keyFindings
+        - riskLevel
+
+    TimelineEvent:
+      type: object
+      properties:
+        date:
+          type: string
+        event:
+          type: string
+        type:
+          type: string
+      required:
+        - date
+        - event
+        - type
+
+    SimilarCase:
+      type: object
+      properties:
+        firId:
+          type: integer
+        firNumber:
+          type: string
+        crimeType:
+          type: string
+        similarity:
+          type: number
+        matchReasons:
+          type: array
+          items:
+            type: string
+        outcome:
+          type: string
+      required:
+        - firId
+        - firNumber
+        - crimeType
+        - similarity
+        - matchReasons
+        - outcome
+
+    # Accused
+    Accused:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        age:
+          type: integer
+        gender:
+          type: string
+        district:
+          type: string
+        totalFirs:
+          type: integer
+        riskScore:
+          type: integer
+        riskLevel:
+          type: string
+          enum: [low, medium, high, critical]
+        isRepeatOffender:
+          type: boolean
+        crimeTypes:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - name
+        - age
+        - gender
+        - district
+        - totalFirs
+        - riskScore
+        - riskLevel
+        - isRepeatOffender
+        - crimeTypes
+
+    AccusedProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        age:
+          type: integer
+        gender:
+          type: string
+        district:
+          type: string
+        totalFirs:
+          type: integer
+        riskScore:
+          type: integer
+        riskLevel:
+          type: string
+          enum: [low, medium, high, critical]
+        isRepeatOffender:
+          type: boolean
+        hasViolentCrimes:
+          type: boolean
+        usedWeapons:
+          type: boolean
+        networkSize:
+          type: integer
+        crimeTypes:
+          type: array
+          items:
+            type: string
+        firHistory:
+          type: array
+          items:
+            $ref: "#/components/schemas/FirReference"
+        behavioralProfile:
+          type: string
+        riskFactors:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - name
+        - age
+        - gender
+        - district
+        - totalFirs
+        - riskScore
+        - riskLevel
+        - isRepeatOffender
+        - hasViolentCrimes
+        - usedWeapons
+        - networkSize
+        - crimeTypes
+        - firHistory
+        - behavioralProfile
+        - riskFactors
+
+    FirReference:
+      type: object
+      properties:
+        firId:
+          type: integer
+        firNumber:
+          type: string
+        crimeType:
+          type: string
+        date:
+          type: string
+        policeStation:
+          type: string
+        status:
+          type: string
+      required:
+        - firId
+        - firNumber
+        - crimeType
+        - date
+        - policeStation
+        - status
+
+    # Network Graph
+    NetworkGraph:
+      type: object
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/NetworkNode"
+        edges:
+          type: array
+          items:
+            $ref: "#/components/schemas/NetworkEdge"
+        stats:
+          $ref: "#/components/schemas/NetworkStats"
+      required:
+        - nodes
+        - edges
+        - stats
+
+    NetworkNode:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        type:
+          type: string
+          enum: [accused, victim, location, vehicle, phone, bank, fir]
+        riskLevel:
+          type: ["string", "null"]
+        extraInfo:
+          type: ["string", "null"]
+      required:
+        - id
+        - label
+        - type
+
+    NetworkEdge:
+      type: object
+      properties:
+        id:
+          type: string
+        source:
+          type: string
+        target:
+          type: string
+        label:
+          type: string
+        weight:
+          type: number
+      required:
+        - id
+        - source
+        - target
+        - label
+        - weight
+
+    NetworkStats:
+      type: object
+      properties:
+        totalNodes:
+          type: integer
+        totalEdges:
+          type: integer
+        gangsDetected:
+          type: integer
+        centralNode:
+          type: string
+      required:
+        - totalNodes
+        - totalEdges
+        - gangsDetected
+        - centralNode
+
+    # Analytics
+    TrendDataPoint:
+      type: object
+      properties:
+        period:
+          type: string
+        total:
+          type: integer
+        burglary:
+          type: integer
+        assault:
+          type: integer
+        fraud:
+          type: integer
+        cyberCrime:
+          type: integer
+        vehicleTheft:
+          type: integer
+        other:
+          type: integer
+      required:
+        - period
+        - total
+        - burglary
+        - assault
+        - fraud
+        - cyberCrime
+        - vehicleTheft
+        - other
+
+    DistrictCrimeData:
+      type: object
+      properties:
+        district:
+          type: string
+        total:
+          type: integer
+        solved:
+          type: integer
+        pending:
+          type: integer
+        crimeRate:
+          type: number
+      required:
+        - district
+        - total
+        - solved
+        - pending
+        - crimeRate
+
+    SociologicalInsights:
+      type: object
+      properties:
+        byAgeGroup:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgeGroupData"
+        byGender:
+          type: array
+          items:
+            $ref: "#/components/schemas/GenderData"
+        byEducation:
+          type: array
+          items:
+            $ref: "#/components/schemas/EducationData"
+        byTimeOfDay:
+          type: array
+          items:
+            $ref: "#/components/schemas/TimeOfDayData"
+        keyInsights:
+          type: array
+          items:
+            type: string
+      required:
+        - byAgeGroup
+        - byGender
+        - byEducation
+        - byTimeOfDay
+        - keyInsights
+
+    AgeGroupData:
+      type: object
+      properties:
+        ageGroup:
+          type: string
+        count:
+          type: integer
+        percentage:
+          type: number
+        dominantCrimeType:
+          type: string
+      required:
+        - ageGroup
+        - count
+        - percentage
+        - dominantCrimeType
+
+    GenderData:
+      type: object
+      properties:
+        gender:
+          type: string
+        count:
+          type: integer
+        percentage:
+          type: number
+      required:
+        - gender
+        - count
+        - percentage
+
+    EducationData:
+      type: object
+      properties:
+        educationLevel:
+          type: string
+        count:
+          type: integer
+        percentage:
+          type: number
+      required:
+        - educationLevel
+        - count
+        - percentage
+
+    TimeOfDayData:
+      type: object
+      properties:
+        hour:
+          type: integer
+        count:
+          type: integer
+      required:
+        - hour
+        - count
+
+    MOPattern:
+      type: object
+      properties:
+        pattern:
+          type: string
+        crimeType:
+          type: string
+        occurrences:
+          type: integer
+        districts:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+      required:
+        - pattern
+        - crimeType
+        - occurrences
+        - districts
+        - description
+
+    # Hotspots
+    Hotspot:
+      type: object
+      properties:
+        id:
+          type: integer
+        latitude:
+          type: number
+        longitude:
+          type: number
+        location:
+          type: string
+        district:
+          type: string
+        intensity:
+          type: number
+        crimeCount:
+          type: integer
+        dominantCrimeType:
+          type: string
+        riskLevel:
+          type: string
+          enum: [low, medium, high, critical]
+      required:
+        - id
+        - latitude
+        - longitude
+        - location
+        - district
+        - intensity
+        - crimeCount
+        - dominantCrimeType
+        - riskLevel
+
+    # Forecasting
+    CrimePrediction:
+      type: object
+      properties:
+        id:
+          type: integer
+        location:
+          type: string
+        district:
+          type: string
+        crimeType:
+          type: string
+        probability:
+          type: number
+        predictedDate:
+          type: string
+        confidence:
+          type: string
+          enum: [low, medium, high]
+        reasoning:
+          type: string
+      required:
+        - id
+        - location
+        - district
+        - crimeType
+        - probability
+        - predictedDate
+        - confidence
+        - reasoning
+
+    RiskArea:
+      type: object
+      properties:
+        id:
+          type: integer
+        area:
+          type: string
+        district:
+          type: string
+        riskScore:
+          type: integer
+        primaryThreat:
+          type: string
+        recommendedPatrolFrequency:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+      required:
+        - id
+        - area
+        - district
+        - riskScore
+        - primaryThreat
+        - recommendedPatrolFrequency
+        - latitude
+        - longitude
+
+    # Alerts
+    Alert:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [repeat_offender, gang_activity, crime_spike, same_weapon, serial_pattern]
+        title:
+          type: string
+        description:
+          type: string
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+        location:
+          type: string
+        timestamp:
+          type: string
+        isRead:
+          type: boolean
+        relatedFirIds:
+          type: array
+          items:
+            type: integer
+      required:
+        - id
+        - type
+        - title
+        - description
+        - severity
+        - location
+        - timestamp
+        - isRead
+        - relatedFirIds

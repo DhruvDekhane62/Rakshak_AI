@@ -4,10 +4,14 @@
   "license": "MIT",
   "scripts": {
     "dev": "node ./scripts/dev.mjs",
-    "build": "pnpm run typecheck && pnpm -r --if-present run build",
+    "build": "npm run --prefix artifacts/rakshak-ai build && node -e \"const fs=require('fs'); fs.rmSync('dist', {recursive:true, force:true}); fs.cpSync('artifacts/rakshak-ai/dist/public', 'dist', {recursive: true})\"",
     "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+    "typecheck": "npm run typecheck:libs && npm run --prefix artifacts/rakshak-ai typecheck"
   },
+  "workspaces": [
+    "artifacts/*",
+    "lib/*"
+  ],
   "private": true,
   "dependencies": {
     "@replit/connectors-sdk": "^0.4.1"
